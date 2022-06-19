@@ -28,7 +28,7 @@ module.exports.register = async (req, res, next) => {
       email: email,
       username: username,
       password: md5(req.body.password),
-      status: 1,
+      status: "enabled",
       image: "",
       role: "user",
       createdAt: Date.now(),
@@ -45,4 +45,46 @@ module.exports.register = async (req, res, next) => {
         return res.status(400).json({ message: error });
       });
   }
+};
+
+module.exports.list = async (req, res, next) => {
+  await User.find()
+    .where({ softDelete: "" })
+    .populate("room")
+    .sort({ createdAt: 1 })
+    .exec((err, users) => {
+      if (err) return res.status(400).json(err);
+
+      return res.status(200).json(users.map(formatUser));
+    });
+};
+
+function formatUser(userFormBD) {
+  const { _id: id, username, email, room, status, role } = userFormBD;
+
+  return {
+    id,
+    username,
+    email,
+    room: room?.name || "",
+    status,
+    role,
+  };
+}
+
+module.exports.update = async (req, res, next) => {
+  await User.updateOne(
+    { _id: req.params.id },
+    {
+      status: req.body.status,
+      role: req.body.role,
+      updatedAt: Date.now(),
+    }
+  )
+    .then(() => {
+      return res.status(200).json({ message: "Cập nhật thành công!" });
+    })
+    .catch((err) => {
+      return res.status(400).json(err);
+    });
 };

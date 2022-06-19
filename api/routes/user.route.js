@@ -10,4 +10,8 @@ router.post(
   controller.register
 );
 
+router.get("/list", controller.list);
+
+router.put("/update/:id", controller.update);
+
 module.exports = router;

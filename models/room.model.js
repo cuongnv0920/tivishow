@@ -6,22 +6,26 @@ const roomSchema = new Schema({
     type: String,
     require: [true, "Vui lòng nhập tên Phòng/ Ban."],
   },
+
   code: {
     type: String,
     require: [true, "Vui lòng nhập mã Phòng/ Ban."],
   },
+
   users: [
     {
       type: Schema.Types.ObjectId,
       ref: "User",
     },
   ],
+
   softDelete: {
     type: String,
   },
   createdAt: {
     type: Date,
   },
+
   updatedAt: {
     type: Date,
   },
