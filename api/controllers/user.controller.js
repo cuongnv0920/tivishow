@@ -17,7 +17,7 @@ module.exports.register = async (req, res, next) => {
   }
 
   if (errors.length) {
-    return res.status(400).json({ message: errors });
+    return res.status(400).json({ message: errors[0] });
   } else {
     const email = req.body.email;
     const username = email.substring(0, email.indexOf("@"));
