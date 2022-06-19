@@ -10,7 +10,7 @@ module.exports.login = async (req, res, next) => {
   const hashedPassword = md5(password);
 
   const user = await User.findOne({ username: username });
-  if (!user || user.softDelete == "") {
+  if (!user || user.softDelete === "") {
     return res
       .status(400)
       .json({ message: "Tên đăng nhập không tồn tại, vui lòng kiểm tra lại!" });
@@ -20,6 +20,12 @@ module.exports.login = async (req, res, next) => {
     return res
       .status(400)
       .json({ message: "Mật khẩu không đúng, vui lòng kiểm tra lại!" });
+  }
+
+  if (user.status === "disabled") {
+    return res.status(400).json({
+      message: "User đang bị tạm khóa, vui lòng liên hệ quản trị!",
+    });
   }
 
   const token = jwt.sign({ userId: user._id }, secretOrKey.key);
