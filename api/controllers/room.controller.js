@@ -13,10 +13,8 @@ module.exports.create = async (req, res, next) => {
     });
   }
 
-  console.log(errors);
-
   if (errors.length) {
-    return res.status(400).json({ message: errors });
+    return res.status(400).json({ message: errors[0] });
   } else {
     await Room.create({
       name: req.body.name,
@@ -56,5 +54,31 @@ function formatDB(roomFormDB) {
 }
 
 module.exports.update = async (req, res, next) => {
-  console.log(req.params.id);
+  const errors = [];
+
+  const validationError = validationResult(req);
+  if (!validationError.isEmpty()) {
+    Object.keys(validationError.mapped()).forEach((field) => {
+      errors.push(validationError.mapped()[field]["msg"]);
+    });
+  }
+
+  if (errors.length) {
+    return res.status(400).json({ message: errors[0] });
+  } else {
+    await Room.updateOne(
+      { _id: req.params.id },
+      {
+        code: req.body.code,
+        name: req.body.name,
+        updatedAt: Date.now(),
+      }
+    )
+      .then(() => {
+        return res.status(200).json({ message: "Cập nhật thành công!" });
+      })
+      .catch((err) => {
+        return res.status(400).json({ message: err });
+      });
+  }
 };

@@ -8,6 +8,6 @@ router.post("/create", validator.validatorCreateRoom(), controller.create);
 
 router.get("/list", controller.list);
 
-router.put("/update", controller.update);
+router.put("/update/:id", validator.validatorUpdateRoom(), controller.update);
 
 module.exports = router;
