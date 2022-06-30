@@ -1,6 +1,4 @@
 const Room = require("../../models/room.model");
-const jwt = require("jsonwebtoken");
-const secretOrKey = require("../key/user.key");
 const { validationResult } = require("express-validator");
 
 module.exports.create = async (req, res, next) => {
@@ -35,7 +33,7 @@ module.exports.create = async (req, res, next) => {
 module.exports.list = async (req, res, next) => {
   await Room.find()
     .where({ softDelete: "" })
-    .sort({ createdAt: 1 })
+    .sort({ createdAt: -1 })
     .exec((err, rooms) => {
       if (err) return res.status(400).json(err);
 

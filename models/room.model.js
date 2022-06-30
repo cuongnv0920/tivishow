@@ -32,9 +32,9 @@ const roomSchema = new Schema({
 });
 
 roomSchema.index({ "$**": "text" });
-const Room = mongoose.model("Room", roomSchema, "room");
+const Rooms = mongoose.model("Rooms", roomSchema, "rooms");
 
-const doc = new Room();
+const doc = new Rooms();
 doc._id instanceof mongoose.Types.ObjectId;
 
-module.exports = Room;
+module.exports = Rooms;
