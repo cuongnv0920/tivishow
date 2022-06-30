@@ -51,7 +51,7 @@ module.exports.list = async (req, res, next) => {
   await User.find()
     .where({ softDelete: "" })
     .populate("room")
-    .sort({ createdAt: 1 })
+    .sort({ createdAt: -1 })
     .exec((err, users) => {
       if (err) return res.status(400).json(err);
 
@@ -60,22 +60,28 @@ module.exports.list = async (req, res, next) => {
 };
 
 function formatUser(userFormBD) {
-  const { _id: id, username, email, room, status, role } = userFormBD;
+  const { _id: id, username, email, status, role } = userFormBD;
 
   return {
     id,
     username,
     email,
-    room: room?.name || "",
     status,
     role,
   };
 }
 
 module.exports.update = async (req, res, next) => {
+  function hashPassword() {
+    if (req.body.password) {
+      return md5(req.body.password);
+    }
+  }
+
   await User.updateOne(
     { _id: req.params.id },
     {
+      password: hashPassword(),
       status: req.body.status,
       role: req.body.role,
       updatedAt: Date.now(),
