@@ -36,6 +36,7 @@ const apiRooms = require("./api/routes/room.route");
 const apiPosters = require("./api/routes/poster.route");
 const apiExchangeRate = require("./api/routes/exchageRate.route");
 const apiAmlitude = require("./api/routes/amplitude.route");
+const apiInterest = require("./api/routes/interest.route");
 
 // user routes
 app.use("/api/auth", apiAuthRoutes);
@@ -44,6 +45,7 @@ app.use("/api/rooms", apiRooms);
 app.use("/api/posters", apiPosters);
 app.use("/api/exchangerates", apiExchangeRate);
 app.use("/api/amplitudes", apiAmlitude);
+app.use("/api/interests", apiInterest);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

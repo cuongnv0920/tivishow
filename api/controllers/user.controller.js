@@ -4,8 +4,6 @@ const jwt = require("jsonwebtoken");
 const secretOrKey = require("../key/user.key");
 const { validationResult } = require("express-validator");
 
-const now = new Date();
-
 module.exports.register = async (req, res, next) => {
   const errors = [];
 
