@@ -35,19 +35,22 @@ function doRequest(url) {
             .find("td.ngoaite_1")
             .text()
             .replace(/\s+/g, " ")
-            .split(" ");
+            .split(" ")
+            .slice(1, 23);
 
           const buyTransfers = $(el)
             .find("td.mua_1")
             .text()
             .replace(/\s+/g, " ")
-            .split(" ");
+            .split(" ")
+            .slice(1, 23);
 
           const sellings = $(el)
             .find("td.ban_1")
             .text()
             .replace(/\s+/g, " ")
-            .split(" ");
+            .split(" ")
+            .slice(1, 23);
 
           const currency = currencys.map((currency) => {
             return currency;
@@ -83,17 +86,17 @@ function formatDB(array) {
           selling: item.selling[i],
         }
     );
-    
+
     return arr.map((row) => ({
       currency: row.currency,
-      buyCash: row.buyCash?.replace(",", ""),
-      buyTransfer: row.buyTransfer?.replace(",", ""),
-      selling: row.selling?.replace(",", ""),
+      buyCash: row.buyCash?.replace(",", "").replace("-", 0),
+      buyTransfer: row.buyTransfer?.replace(",", "").replace("-", 0),
+      selling: row.selling?.replace(",", "").replace("-", 0),
     }));
   });
 }
 
-module.exports.create = async (req, res, next) => {
+const update = async (req, res, next) => {
   const crawler = await doRequest(requests.URL);
   const data = formatDB(crawler);
 
@@ -102,15 +105,61 @@ module.exports.create = async (req, res, next) => {
       .status(400)
       .json({ message: "Kiếm tra lại kết nối của server." });
   } else {
-    const x = data[0].forEach((el, i) => {
-      return {
-        image: "",
-        currency: el.currency,
-        buyCash: el.buyCash,
-        buyTransfer: el.buyTransfer,
-        selling: el.selling,
-        createdAt: Date.now(),
-      };
+    const rows = data[0].map((row) => {
+      return ExchangeRate.updateMany(
+        { currency: row.currency },
+        {
+          currency: row.currency,
+          buyCash: row.buyCash,
+          buyTransfer: row.buyTransfer,
+          selling: row.selling,
+          updatedAt: Date.now(),
+        }
+      );
     });
+
+    await asyncPool(1, rows, (doc) => doc.updateMany())
+      .then(() => {
+        console.log("Cập nhật thành công.");
+        // return res.status(200).json({ message: "Cập nhật thành Công." });
+      })
+      .catch((err) => {
+        console.log(err);
+        // return res.status(400).json(err);
+      });
   }
 };
+
+setInterval(update, 1000 * 60 * 3);
+
+module.exports.list = async (req, res, next) => {
+  await ExchangeRate.find()
+    .where({ softDelete: "" })
+    .sort({ createdAt: 1 })
+    .limit(10)
+    .exec((err, exchangeRates) => {
+      if (err) return res.status(400).json(err);
+
+      return res.status(200).json(exchangeRates.map(formatExchangeRate));
+    });
+};
+
+function formatExchangeRate(exchangeRateFormDB) {
+  const {
+    _id: id,
+    image,
+    currency,
+    buyCash,
+    buyTransfer,
+    selling,
+  } = exchangeRateFormDB;
+
+  return {
+    id,
+    image,
+    currency,
+    buyCash,
+    buyTransfer,
+    selling,
+  };
+}

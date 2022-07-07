@@ -1,8 +1,7 @@
-const Poster = require("../../models/poster.model");
-const fs = require("fs");
+const Source = require("../../models/source.model");
 
 module.exports.create = async (req, res, next) => {
-  function image() {
+  function source() {
     if (req.file) {
       return req.file.path.split("\\").slice(1).join("/");
     } else {
@@ -10,26 +9,28 @@ module.exports.create = async (req, res, next) => {
     }
   }
 
-  if (image() === "" || image() === undefined) {
-    return res.status(400).json({ message: "Vui lòng chọn file ảnh poster." });
+  if (source() === "" || source() === undefined) {
+    return res.status(400).json({ message: "Vui lòng chọn file video." });
   }
 
-  if (req.file?.size > 8 * 1000 * 1000) {
-    fs.unlinkSync("./public/" + image());
+  if (req.file?.size > 100 * 1000 * 1000) {
+    fs.unlinkSync("./public/" + source());
     return res
       .status(400)
-      .json({ message: "File ảnh không được vượt quá 8MB." });
+      .json({ message: "File video không được vượt quá 100MB." });
   }
 
-  if (req.file.mimetype !== "image/png" && req.file.mimetype !== "image/jpeg") {
-    fs.unlinkSync("./public/" + image());
-    return res.status(400).json({ message: "File ảnh không đúng định dạng." });
+  if (req.file.mimetype !== "video/mp4" && req.file.mimetype !== "video/ogg") {
+    fs.unlinkSync("./public/" + source());
+    return res
+      .status(400)
+      .json({ message: "File video không đúng định dạng." });
   }
 
-  await Poster.create({
-    image: image(),
+  await Source.create({
+    video: source(),
     description: req.body.description,
-    status: "enabled",
+    type: req.file.mimetype,
     createdAt: Date.now(),
   })
     .then(() => {
@@ -41,29 +42,30 @@ module.exports.create = async (req, res, next) => {
 };
 
 module.exports.list = async (req, res, next) => {
-  await Poster.find()
+  await Source.find()
     .where({ softDelete: "" })
     .sort({ createdAt: -1 })
-    .exec((err, posters) => {
+    .exec((err, sources) => {
       if (err) return res.status(400).json(err);
 
-      return res.status(200).json(posters.map(formatPoster));
+      return res.status(200).json(sources.map(formatSource));
     });
 };
 
-function formatPoster(posterFormBD) {
-  const { _id: id, description, image, status } = posterFormBD;
+function formatSource(sourceFormBD) {
+  const { _id: id, description, video, type, status } = sourceFormBD;
 
   return {
     id,
     description,
-    image,
+    video,
+    type,
     status,
   };
 }
 
 module.exports.update = async (req, res, next) => {
-  function image() {
+  function source() {
     if (req.file) {
       return req.file.path.split("\\").slice(1).join("/");
     }
@@ -75,10 +77,10 @@ module.exports.update = async (req, res, next) => {
     }
   };
 
-  await Poster.updateOne(
+  await Source.updateOne(
     { _id: req.body.id },
     {
-      image: image(),
+      image: source(),
       status: undefinedRe(req.body.status),
       description: undefinedRe(req.body.description),
       updatedAt: Date.now(),

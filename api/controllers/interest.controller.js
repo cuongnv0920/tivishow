@@ -1,7 +1,7 @@
 const Interest = require("../../models/interest.model");
 const { validationResult } = require("express-validator");
 
-module.exports.created = async (req, res, next) => {
+module.exports.create = async (req, res, next) => {
   const errors = [];
 
   const validationError = validationResult(req);
@@ -32,7 +32,8 @@ module.exports.created = async (req, res, next) => {
 module.exports.list = async (req, res, next) => {
   await Interest.find()
     .where({ softDelete: "" })
-    .sort({ createdAt: 1 })
+    .sort({ term: 1 })
+    .limit(10)
     .exec((err, interests) => {
       if (err) return res.status(400).json(err);
 

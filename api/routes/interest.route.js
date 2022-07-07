@@ -4,7 +4,7 @@ const validator = require("../../validator/interest.validator");
 
 const controller = require("../controllers/interest.controller");
 
-router.post("/create", validator.validatorCreateInterest(), controller.created);
+router.post("/create", validator.validatorCreateInterest(), controller.create);
 
 router.get("/list", controller.list);
 
