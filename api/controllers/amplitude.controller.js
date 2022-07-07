@@ -1,4 +1,5 @@
 const Amlitude = require("../../models/amplitude.model");
+const ExchangeRate = require("../../models/exchangeRate.model");
 const { validationResult } = require("express-validator");
 
 module.exports.created = async (req, res, next) => {
@@ -32,6 +33,15 @@ module.exports.created = async (req, res, next) => {
       .catch((error) => {
         return res.status(400).json({ message: error });
       });
+
+    await ExchangeRate.create({
+      image: ensign(req.body.currency),
+      currency: req.body.currency,
+      buyCash: 0,
+      buyTransfer: 0,
+      selling: 0,
+      createdAt: Date.now(),
+    });
   }
 };
 

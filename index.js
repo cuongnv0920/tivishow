@@ -37,15 +37,19 @@ const apiPosters = require("./api/routes/poster.route");
 const apiExchangeRate = require("./api/routes/exchageRate.route");
 const apiAmlitude = require("./api/routes/amplitude.route");
 const apiInterest = require("./api/routes/interest.route");
+const apiValid = require("./api/routes/valid.route");
+const apiSource = require("./api/routes/source.route");
 
 // user routes
 app.use("/api/auth", apiAuthRoutes);
 app.use("/api/users", cors(), apiUsers);
 app.use("/api/rooms", apiRooms);
 app.use("/api/posters", apiPosters);
-app.use("/api/exchangerates", apiExchangeRate);
+app.use("/api/exchangeRates", apiExchangeRate);
 app.use("/api/amplitudes", apiAmlitude);
 app.use("/api/interests", apiInterest);
+app.use("/api/valids", apiValid);
+app.use("/api/sources", apiSource);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

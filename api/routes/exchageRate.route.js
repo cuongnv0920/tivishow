@@ -4,6 +4,8 @@ const upload = require("../../config/storage.conf");
 
 const controller = require("../controllers/exchangeRate.controller");
 
-router.post("/create", upload.single("image"), controller.create);
+// router.post("/update", controller.update);
+
+router.get("/list", controller.list);
 
 module.exports = router;
