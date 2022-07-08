@@ -26,6 +26,11 @@ const amplitudeSchema = new Schema({
     default: 0,
   },
 
+  status: {
+    type: String,
+    default: "enabled",
+  },
+
   softDelete: {
     type: Date,
   },

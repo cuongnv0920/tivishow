@@ -41,7 +41,13 @@ module.exports.created = async (req, res, next) => {
       buyTransfer: 0,
       selling: 0,
       createdAt: Date.now(),
-    });
+    })
+      .then(() => {
+        console.log("Thêm mã ngoại tệ " + req.body.currency + " thành công.");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 };
 
@@ -64,6 +70,7 @@ function formatDB(amplitudeFormDB) {
     buyCash,
     buyTransfer,
     selling,
+    status,
   } = amplitudeFormDB;
 
   return {
@@ -73,6 +80,7 @@ function formatDB(amplitudeFormDB) {
     buyCash,
     buyTransfer,
     selling,
+    status,
   };
 }
 
@@ -96,6 +104,7 @@ module.exports.update = async (req, res, next) => {
         buyCash: req.body.buyCash,
         buyTransfer: req.body.buyTransfer,
         selling: req.body.selling,
+        status: req.body.status,
         updatedAt: Date.now(),
       }
     )
@@ -104,6 +113,24 @@ module.exports.update = async (req, res, next) => {
       })
       .catch((err) => {
         return res.status(400).json({ message: err });
+      });
+
+    await ExchangeRate.updateOne(
+      { currency: req.body.currency },
+      {
+        status: req.body.status,
+        updatedAt: Date.now(),
+      }
+    )
+      .then(() => {
+        console.log(
+          "Cập nhật trạng thái mã ngoại tệ " +
+            req.body.currency +
+            " thành công."
+        );
+      })
+      .catch((err) => {
+        console.log(err);
       });
   }
 };
