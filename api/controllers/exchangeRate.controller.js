@@ -2,7 +2,6 @@ const ExchangeRate = require("../../models/exchangeRate.model");
 const cheerio = require("cheerio");
 const request = require("request-promise");
 const { response } = require("express");
-const fs = require("fs");
 const asyncPool = require("tiny-async-pool");
 const requests = require("../../config/request.conf");
 
@@ -100,10 +99,8 @@ const update = async (req, res, next) => {
   const crawler = await doRequest(requests.URL);
   const data = formatDB(crawler);
 
-  if (data[0].length < 0) {
-    return res
-      .status(400)
-      .json({ message: "Kiếm tra lại kết nối của server." });
+  if (data[0].length === undefined) {
+    console.log("Vui lòng kiểm tra kết nối mạng.");
   } else {
     const rows = data[0].map((row) => {
       return ExchangeRate.updateMany(
@@ -121,11 +118,9 @@ const update = async (req, res, next) => {
     await asyncPool(1, rows, (doc) => doc.updateMany())
       .then(() => {
         console.log("Cập nhật thành công.");
-        // return res.status(200).json({ message: "Cập nhật thành Công." });
       })
       .catch((err) => {
         console.log(err);
-        // return res.status(400).json(err);
       });
   }
 };
@@ -152,6 +147,7 @@ function formatExchangeRate(exchangeRateFormDB) {
     buyCash,
     buyTransfer,
     selling,
+    status,
   } = exchangeRateFormDB;
 
   return {
@@ -161,5 +157,6 @@ function formatExchangeRate(exchangeRateFormDB) {
     buyCash,
     buyTransfer,
     selling,
+    status,
   };
 }

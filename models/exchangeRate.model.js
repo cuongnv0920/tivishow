@@ -23,6 +23,11 @@ const exchangeRateSchema = new Schema({
     type: Number,
   },
 
+  status: {
+    type: String,
+    default: "enabled",
+  },
+
   softDelete: {
     type: Date,
   },
