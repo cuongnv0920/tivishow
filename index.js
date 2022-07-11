@@ -1,13 +1,18 @@
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const User = require("./models/user.model");
 
 const app = express();
-const port = 7000;
+const port = 7000 || process.env.port;
 
 // connect database mongodb
-const mongoURL = "mongodb://localhost:27017/tivishow";
+const mongoURL = "mongodb://localhost:27017/tivishow" || process.env.mongoURL;
 
 mongoose.connect(mongoURL).then(
   () => console.log("Database connection established"),

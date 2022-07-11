@@ -1,8 +1,20 @@
 const User = require("../../models/user.model");
+const userAdmin = require("../../config/userAdmin.conf");
 const md5 = require("md5");
 const jwt = require("jsonwebtoken");
 const secretOrKey = require("../key/user.key");
 const { validationResult } = require("express-validator");
+
+User.exists({ username: userAdmin.username }).then((user) => {
+  if (!user) {
+    return User.create({
+      username: userAdmin.username,
+      password: md5(userAdmin.password),
+      role: userAdmin.role,
+      createdAt: Date.now(),
+    });
+  }
+});
 
 module.exports.register = async (req, res, next) => {
   const errors = [];
