@@ -6,23 +6,26 @@ const secretOrKey = require("../key/user.key");
 
 module.exports.login = async (req, res, next) => {
   const username = req.body.username;
-  const password = req.body.password;
-  const hashedPassword = md5(password);
+  const email = req.body.username;
+  const password = md5(req.body.password);
 
-  const user = await User.findOne({ username: username });
-  if (!user || user.softDelete === "") {
+  const user = await User.find({
+    $or: [{ username: username }, { email: email }],
+  });
+
+  if (!user) {
     return res
       .status(400)
       .json({ message: "Tên đăng nhập không tồn tại, vui lòng kiểm tra lại!" });
   }
 
-  if (user.password !== hashedPassword) {
+  if (user[0].password !== password) {
     return res
       .status(400)
       .json({ message: "Mật khẩu không đúng, vui lòng kiểm tra lại!" });
   }
 
-  if (user.status === "disabled") {
+  if (user[0].status === "disabled") {
     return res.status(400).json({
       message: "User đang bị tạm khóa, vui lòng liên hệ quản trị!",
     });
@@ -30,7 +33,7 @@ module.exports.login = async (req, res, next) => {
 
   const token = jwt.sign({ userId: user._id }, secretOrKey.key);
   return res.status(200).json({
-    user: user,
+    user: user[0],
     jwt: token,
   });
 };
