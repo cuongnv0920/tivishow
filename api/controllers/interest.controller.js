@@ -33,7 +33,7 @@ module.exports.list = async (req, res, next) => {
   await Interest.find()
     .where({ softDelete: "" })
     .sort({ term: 1 })
-    .limit(10)
+    .limit(8)
     .exec((err, interests) => {
       if (err) return res.status(400).json(err);
 

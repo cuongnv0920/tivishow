@@ -131,7 +131,7 @@ module.exports.list = async (req, res, next) => {
   await ExchangeRate.find()
     .where({ softDelete: "" })
     .sort({ createdAt: 1 })
-    .limit(10)
+    .limit(8)
     .exec((err, exchangeRates) => {
       if (err) return res.status(400).json(err);
 
