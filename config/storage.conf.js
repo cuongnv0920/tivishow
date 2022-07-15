@@ -19,7 +19,7 @@ const uploadImage = multer({
 const uploadSource = multer({
   storage: storage,
   limits: {
-    fileSize: "100mb",
+    fileSize: "150mb",
   },
 });
 

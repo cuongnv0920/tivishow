@@ -44,6 +44,7 @@ const apiAmlitude = require("./api/routes/amplitude.route");
 const apiInterest = require("./api/routes/interest.route");
 const apiValid = require("./api/routes/valid.route");
 const apiSource = require("./api/routes/source.route");
+const apiCalendar = require("./api/routes/calendar.route");
 
 // user routes
 app.use("/api/auth", apiAuthRoutes);
@@ -55,6 +56,7 @@ app.use("/api/amplitudes", apiAmlitude);
 app.use("/api/interests", apiInterest);
 app.use("/api/valids", apiValid);
 app.use("/api/sources", apiSource);
+app.use("/api/calendars", apiCalendar);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

@@ -14,7 +14,7 @@ module.exports.create = async (req, res, next) => {
     return res.status(400).json({ message: "Vui lòng chọn file ảnh poster." });
   }
 
-  if (req.file?.size > 8 * 1000 * 1000) {
+  if (req.file?.size > 8 * 1024 * 1024) {
     fs.unlinkSync("./public/" + image());
     return res
       .status(400)

@@ -1,4 +1,5 @@
 const Source = require("../../models/source.model");
+const fs = require("fs");
 
 module.exports.create = async (req, res, next) => {
   function source() {
@@ -13,11 +14,11 @@ module.exports.create = async (req, res, next) => {
     return res.status(400).json({ message: "Vui lòng chọn file video." });
   }
 
-  if (req.file?.size > 100 * 1000 * 1000) {
+  if (req.file?.size > 150 * 1024 * 1024) {
     fs.unlinkSync("./public/" + source());
     return res
       .status(400)
-      .json({ message: "File video không được vượt quá 100MB." });
+      .json({ message: "File video không được vượt quá 150MB." });
   }
 
   if (req.file.mimetype !== "video/mp4" && req.file.mimetype !== "video/ogg") {
@@ -80,7 +81,7 @@ module.exports.update = async (req, res, next) => {
   await Source.updateOne(
     { _id: req.body.id },
     {
-      image: source(),
+      video: source(),
       status: undefinedRe(req.body.status),
       description: undefinedRe(req.body.description),
       updatedAt: Date.now(),
