@@ -11,11 +11,12 @@ function doRequest(url) {
       if (!error && response.statusCode === 200) {
         const $ = cheerio.load(html);
 
+        const notifications = [];
         const buyCash = [];
         const dataCrawler = [];
 
         $("#table").each((index, el) => {
-          const buyCashs = $(el)
+          const buyCashs = $(el) // crawler giá bán tiền mặt
             .find("tr")
             .find(
               "td[style='text-align: center; vertical-align: middle; width: 26%']"
@@ -27,24 +28,45 @@ function doRequest(url) {
           for (var i = 1; i <= buyCashs.length; i += 3) {
             buyCash.push(buyCashs[i]);
           }
+
+          const notificationNumber = $(el) // crawler số lần thông báo
+            .find(
+              "#plcRoot_Layout_zoneContent_pageplaceholder_pageplaceholder_Layout_zoneLeft_ExchangeratesBIDV_lblLanthu"
+            )
+            .text();
+          notifications.push(notificationNumber);
+
+          const notificationDate = $(el) // crawler ngày thông báo
+            .find(
+              "#plcRoot_Layout_zoneContent_pageplaceholder_pageplaceholder_Layout_zoneLeft_ExchangeratesBIDV_lblDate"
+            )
+            .text();
+          notifications.push(notificationDate);
+
+          const notificationHourd = $(el) // crawler giờ thông báo
+            .find(
+              "#plcRoot_Layout_zoneContent_pageplaceholder_pageplaceholder_Layout_zoneLeft_ExchangeratesBIDV_lblTime"
+            )
+            .text();
+          notifications.push(notificationHourd);
         });
 
         $("#contentInterestRates").each((index, el) => {
-          const currencys = $(el)
+          const currencys = $(el) // crawler mã ngoại tệ
             .find("td.ngoaite_1")
             .text()
             .replace(/\s+/g, " ")
             .split(" ")
             .slice(1, 23);
 
-          const buyTransfers = $(el)
+          const buyTransfers = $(el) // crawler giá bán chuyển khoản
             .find("td.mua_1")
             .text()
             .replace(/\s+/g, " ")
             .split(" ")
             .slice(1, 23);
 
-          const sellings = $(el)
+          const sellings = $(el) // crawler giá mua
             .find("td.ban_1")
             .text()
             .replace(/\s+/g, " ")
@@ -63,7 +85,13 @@ function doRequest(url) {
             return selling;
           });
 
-          dataCrawler.push({ currency, buyCash, buyTransfer, selling });
+          dataCrawler.push({
+            currency,
+            buyCash,
+            buyTransfer,
+            selling,
+            notifications,
+          });
         });
 
         resolve(dataCrawler);
@@ -99,9 +127,12 @@ const update = async (req, res, next) => {
   const crawler = await doRequest(requests.URL);
   const data = formatDB(crawler);
 
-  if (data[0].length === undefined) {
-    console.log("Vui lòng kiểm tra kết nối mạng.");
-  } else {
+  const notifications = await ExchangeRate.findOne({ currency: "USD" });
+
+  if (
+    notifications.notificationNumber !== crawler[0].notifications[0] ||
+    notifications.notificationDate !== crawler[0].notifications[1]
+  ) {
     const rows = data[0].map((row) => {
       return ExchangeRate.updateMany(
         { currency: row.currency },
@@ -110,6 +141,9 @@ const update = async (req, res, next) => {
           buyCash: row.buyCash,
           buyTransfer: row.buyTransfer,
           selling: row.selling,
+          notificationNumber: crawler[0].notifications[0],
+          notificationDate: crawler[0].notifications[1],
+          notificationHourd: crawler[0].notifications[2],
           updatedAt: Date.now(),
         }
       );
@@ -125,13 +159,13 @@ const update = async (req, res, next) => {
   }
 };
 
-setInterval(update, 1000 * 60 * 3);
+setInterval(update, 1000 * 60 * 1);
 
 module.exports.list = async (req, res, next) => {
   await ExchangeRate.find()
     .where({ softDelete: "" })
     .sort({ createdAt: 1 })
-    .limit(8)
+    .limit(22)
     .exec((err, exchangeRates) => {
       if (err) return res.status(400).json(err);
 
@@ -147,6 +181,9 @@ function formatExchangeRate(exchangeRateFormDB) {
     buyCash,
     buyTransfer,
     selling,
+    notificationNumber,
+    notificationDate,
+    notificationHourd,
     status,
   } = exchangeRateFormDB;
 
@@ -157,6 +194,9 @@ function formatExchangeRate(exchangeRateFormDB) {
     buyCash,
     buyTransfer,
     selling,
+    notificationNumber,
+    notificationDate,
+    notificationHourd,
     status,
   };
 }

@@ -27,7 +27,7 @@ module.exports.login = async (req, res, next) => {
 
   if (user[0].status === "disabled") {
     return res.status(400).json({
-      message: "User đang bị tạm khóa, vui lòng liên hệ quản trị!",
+      message: "User đang tạm khóa, vui lòng liên hệ quản trị!",
     });
   }
 

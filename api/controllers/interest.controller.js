@@ -32,8 +32,8 @@ module.exports.create = async (req, res, next) => {
 module.exports.list = async (req, res, next) => {
   await Interest.find()
     .where({ softDelete: "" })
-    .sort({ term: 1 })
-    .limit(8)
+    .sort({ createdAt: 1 })
+    .limit(22)
     .exec((err, interests) => {
       if (err) return res.status(400).json(err);
 

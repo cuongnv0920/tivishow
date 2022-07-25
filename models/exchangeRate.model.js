@@ -28,6 +28,21 @@ const exchangeRateSchema = new Schema({
     default: "enabled",
   },
 
+  notificationNumber: {
+    type: String,
+    default: "0",
+  },
+
+  notificationDate: {
+    type: String,
+    default: "",
+  },
+
+  notificationHourd: {
+    type: String,
+    default: "",
+  },
+
   softDelete: {
     type: Date,
   },
