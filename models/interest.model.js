@@ -17,6 +17,11 @@ const interestSchema = new Schema({
     require: [true, "Vui lòng nhập lãi suất VND."],
   },
 
+  valid: {
+    type: Date,
+    default: new Date(),
+  },
+
   status: {
     type: String,
     default: "enabled",

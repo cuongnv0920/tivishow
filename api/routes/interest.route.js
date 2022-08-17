@@ -14,4 +14,6 @@ router.put(
   controller.update
 );
 
+router.put("/updateValid", controller.updateValid);
+
 module.exports = router;

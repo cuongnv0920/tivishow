@@ -42,13 +42,14 @@ module.exports.list = async (req, res, next) => {
 };
 
 function formatInterest(interestDB) {
-  const { _id: id, term, usd, vnd, status } = interestDB;
+  const { _id: id, term, usd, vnd, valid, status } = interestDB;
 
   return {
     id,
     term,
     usd,
     vnd,
+    valid,
     status,
   };
 }
@@ -78,6 +79,24 @@ module.exports.update = async (req, res, next) => {
     )
       .then(() => {
         return res.status(200).json("Cập nhật thành công.");
+      })
+      .catch((err) => {
+        return res.status(400).json(err);
+      });
+  }
+};
+
+module.exports.updateValid = async (req, res, next) => {
+  const exist = await Interest.find().where({ softDelete: "" });
+
+  if (exist.length === 0) {
+    return res
+      .status(400)
+      .json({ message: "Chưa có danh sách Lãi suất tiền gửi trong bảng." });
+  } else {
+    await Interest.updateMany({}, { valid: req.body.valid })
+      .then(() => {
+        return res.status(200).json({ message: "Cập nhật thành công." });
       })
       .catch((err) => {
         return res.status(400).json(err);
