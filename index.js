@@ -42,7 +42,6 @@ const apiPosters = require("./api/routes/poster.route");
 const apiExchangeRate = require("./api/routes/exchageRate.route");
 const apiAmlitude = require("./api/routes/amplitude.route");
 const apiInterest = require("./api/routes/interest.route");
-const apiValid = require("./api/routes/valid.route");
 const apiSource = require("./api/routes/source.route");
 const apiCalendar = require("./api/routes/calendar.route");
 
@@ -54,7 +53,6 @@ app.use("/api/posters", apiPosters);
 app.use("/api/exchangeRates", apiExchangeRate);
 app.use("/api/amplitudes", apiAmlitude);
 app.use("/api/interests", apiInterest);
-app.use("/api/valids", apiValid);
 app.use("/api/sources", apiSource);
 app.use("/api/calendars", apiCalendar);
 
