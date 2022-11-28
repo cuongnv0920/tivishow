@@ -6,7 +6,9 @@ const controller = require("../controllers/interest.controller");
 
 router.post("/create", validator.validatorCreateInterest(), controller.create);
 
-router.get("/list", controller.list);
+router.get("/list/:page", controller.list);
+
+router.get("/adminList", controller.adminList);
 
 router.put(
   "/update/:id",

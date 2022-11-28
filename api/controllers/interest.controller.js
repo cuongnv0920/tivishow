@@ -30,19 +30,56 @@ module.exports.create = async (req, res, next) => {
 };
 
 module.exports.list = async (req, res, next) => {
+  const limit = 8;
+  const page = req.params.page || 1;
+
   await Interest.find()
+    .skip(limit * page - limit)
+    .limit(limit)
     .where({ softDelete: "" })
     .sort({ createdAt: 1 })
-    .limit(22)
     .exec((err, interests) => {
-      if (err) return res.status(400).json(err);
+      Interest.countDocuments((err, count) => {
+        if (err) return res.status(400).json(err);
 
-      return res.status(200).json(interests.map(formatInterest));
+        return res.status(200).json({
+          interests: interests.map(formatInterest),
+          paginations: {
+            limit,
+            page: Number(page),
+            count: Math.ceil(count / limit),
+          },
+        });
+      });
     });
 };
 
-function formatInterest(interestDB) {
-  const { _id: id, term, usd, vnd, valid, status } = interestDB;
+function formatInterest(interestFormDB) {
+  const { _id: id, term, usd, vnd, valid, status } = interestFormDB;
+
+  return {
+    id,
+    term,
+    usd,
+    vnd,
+    valid,
+    status,
+  };
+}
+
+module.exports.adminList = async (req, res, next) => {
+  await Interest.find()
+    .where({ softDelete: "" })
+    .sort({ createdAt: -1 })
+    .exec((err, interests) => {
+      if (err) return res.status(400).json(err);
+
+      return res.status(200).json(interests.map(formatInterestAdmin));
+    });
+};
+
+function formatInterestAdmin(interestFromAdminDB) {
+  const { _id: id, term, usd, vnd, valid, status } = interestFromAdminDB;
 
   return {
     id,

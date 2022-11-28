@@ -6,6 +6,6 @@ const controller = require("../controllers/exchangeRate.controller");
 
 // router.post("/update", controller.update);
 
-router.get("/list", controller.list);
+router.get("/list/:page", controller.list);
 
 module.exports = router;

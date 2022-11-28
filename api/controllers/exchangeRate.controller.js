@@ -127,13 +127,16 @@ const update = async (req, res, next) => {
   const crawler = await doRequest(requests.URL);
   const data = formatDB(crawler);
 
-  const notifications = await ExchangeRate.findOne({ currency: "USD" });
+  const notifications = await ExchangeRate.find();
 
-  if (
-    notifications.notificationNumber !== crawler[0].notifications[0] ||
-    notifications.notificationDate !== crawler[0].notifications[1]
-  ) {
-    const rows = data[0].map((row) => {
+  const checkNotifications = notifications.filter(
+    (notification) =>
+      notification.notificationNumber !== crawler[0]?.notifications[0] ||
+      notification.notificationDate !== crawler[0]?.notifications[1]
+  );
+
+  if (checkNotifications.length > 0) {
+    await data[0]?.map((row) => {
       return ExchangeRate.updateMany(
         { currency: row.currency },
         {
@@ -146,30 +149,41 @@ const update = async (req, res, next) => {
           notificationHourd: crawler[0].notifications[2],
           updatedAt: Date.now(),
         }
-      );
+      )
+        .then(() => {
+          console.log("Cập nhật thành công " + row.currency + " .");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     });
-
-    await asyncPool(1, rows, (doc) => doc.updateMany())
-      .then(() => {
-        console.log("Cập nhật thành công.");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   }
 };
 
 setInterval(update, 1000 * 60 * 1);
 
 module.exports.list = async (req, res, next) => {
+  const limit = 8;
+  const page = req.params.page || 1;
+
   await ExchangeRate.find()
+    .skip(limit * page - limit)
+    .limit(limit)
     .where({ softDelete: "" })
     .sort({ createdAt: 1 })
-    .limit(22)
     .exec((err, exchangeRates) => {
-      if (err) return res.status(400).json(err);
+      ExchangeRate.countDocuments((err, count) => {
+        if (err) return res.status(400).json(err);
 
-      return res.status(200).json(exchangeRates.map(formatExchangeRate));
+        return res.status(200).json({
+          exchangeRates: exchangeRates.map(formatExchangeRate),
+          paginations: {
+            limit,
+            page: Number(page),
+            count: Math.ceil(count / limit),
+          },
+        });
+      });
     });
 };
 

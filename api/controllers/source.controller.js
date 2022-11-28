@@ -47,9 +47,14 @@ module.exports.list = async (req, res, next) => {
     .where({ softDelete: "" })
     .sort({ createdAt: -1 })
     .exec((err, sources) => {
-      if (err) return res.status(400).json(err);
+      Source.countDocuments((err, count) => {
+        if (err) return res.status(400).json(err);
 
-      return res.status(200).json(sources.map(formatSource));
+        return res.status(200).json({
+          sources: sources.map(formatSource),
+          count: count,
+        });
+      });
     });
 };
 
