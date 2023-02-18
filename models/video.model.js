@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const posterSchema = new Schema({
-  image: {
+const sourceSchema = new Schema({
+  video: {
     type: String,
   },
 
@@ -13,6 +13,10 @@ const posterSchema = new Schema({
   status: {
     type: Boolean,
     default: true,
+  },
+
+  type: {
+    type: String,
   },
 
   softDelete: {
@@ -28,10 +32,10 @@ const posterSchema = new Schema({
   },
 });
 
-posterSchema.index({ "$**": "text" });
-const Posters = mongoose.model("Posters", posterSchema, "posters");
+sourceSchema.index({ "$**": "text" });
+const Sources = mongoose.model("Sources", sourceSchema, "sources");
 
-const doc = new Posters();
+const doc = new Sources();
 doc._id instanceof mongoose.Types.ObjectId;
 
-module.exports = Posters;
+module.exports = Sources;
