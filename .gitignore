@@ -7,7 +7,7 @@ node_modules/
 .env
 
 # public
-/public
+public/uploads/
 
 npm-debug.log*
 yarn-debug.log*

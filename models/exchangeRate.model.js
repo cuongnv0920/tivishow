@@ -2,9 +2,8 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const exchangeRateSchema = new Schema({
-  image: {
+  ensign: {
     type: String,
-    default: "",
   },
 
   currency: {
@@ -23,11 +22,6 @@ const exchangeRateSchema = new Schema({
     type: Number,
   },
 
-  status: {
-    type: String,
-    default: "enabled",
-  },
-
   notificationNumber: {
     type: String,
     default: "0",
@@ -41,6 +35,15 @@ const exchangeRateSchema = new Schema({
   notificationHourd: {
     type: String,
     default: "",
+  },
+
+  centerExchangeRate: {
+    type: Number,
+    default: 0,
+  },
+
+  sort: {
+    type: Number,
   },
 
   softDelete: {

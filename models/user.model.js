@@ -15,7 +15,11 @@ const userSchema = new Schema({
 
   username: {
     type: String,
-    require: [true, "Vui lòng nhập tên người dùng."],
+  },
+
+  fullName: {
+    type: String,
+    require: [true, "Vui lòng nhập họ và tên người dùng."],
   },
 
   password: {
@@ -25,13 +29,36 @@ const userSchema = new Schema({
 
   room: {
     type: mongoose.Schema.ObjectId,
-    ref: "Room",
+    ref: "Rooms",
     require: [true, "Vui lòng chọn Phòng/ Ban quản lý."],
   },
 
-  status: {
+  level: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Levels",
+    require: [true, "Vui lòng chọn chức danh."],
+  },
+
+  phone: {
     type: String,
-    default: "enabled",
+    require: [true, "Vui lòng nhập số điện thoại di động."],
+  },
+
+  ext: {
+    type: String,
+  },
+
+  sex: {
+    type: String,
+  },
+
+  birthday: {
+    type: Date,
+  },
+
+  status: {
+    type: Boolean,
+    default: true,
   },
 
   role: {
@@ -39,9 +66,6 @@ const userSchema = new Schema({
     default: "user",
   },
 
-  image: {
-    type: String,
-  },
   softDelete: {
     type: Date,
   },
@@ -56,9 +80,9 @@ const userSchema = new Schema({
 });
 
 userSchema.index({ "$**": "text" });
-const User = mongoose.model("User", userSchema, "users");
+const Users = mongoose.model("Users", userSchema, "users");
 
-const doc = new User();
+const doc = new Users();
 doc._id instanceof mongoose.Types.ObjectId;
 
-module.exports = User;
+module.exports = Users;
