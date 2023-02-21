@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const sourceSchema = new Schema({
-  video: {
+const filmSchema = new Schema({
+  path: {
     type: String,
   },
 
@@ -32,10 +32,10 @@ const sourceSchema = new Schema({
   },
 });
 
-sourceSchema.index({ "$**": "text" });
-const Sources = mongoose.model("Sources", sourceSchema, "sources");
+filmSchema.index({ "$**": "text" });
+const Films = mongoose.model("Films", filmSchema, "films");
 
-const doc = new Sources();
+const doc = new Films();
 doc._id instanceof mongoose.Types.ObjectId;
 
-module.exports = Sources;
+module.exports = Films;

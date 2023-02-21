@@ -1,24 +1,66 @@
-const Poster = require("../models/poster.model");
+const Film = require("../models/film.model");
 const fs = require("fs");
 
 module.exports.getAll = async (req, res, next) => {
-  await Poster.find()
+  await Film.find()
     .where({ softDelete: "" })
     .sort({ createdAt: -1 })
-    .exec((err, posters) => {
-      if (err) return res.status(400).json(err);
+    .exec((err, films) => {
+      Film.countDocuments((err, count) => {
+        if (err) return res.status(400).json(err);
 
-      return res.status(200).json(posters.map(formatPoster));
+        return res.status(200).json({
+          films: films.map(formatFilm),
+          count: count,
+        });
+      });
     });
 };
 
-function formatPoster(data) {
-  const { _id: id, description, path, status } = data;
+function formatFilm(data) {
+  const { _id: id, description, path, type, status } = data;
 
   return {
     id,
     description,
     path,
+    type,
+    status,
+  };
+}
+
+module.exports.get = async (req, res, next) => {
+  const limit = req.query._limit || 1;
+  const page = req.query._page || 1;
+
+  await Film.find({ $and: [{ softDelete: null }, { status: true }] })
+    .skip(limit * page - limit)
+    .limit(limit)
+    .sort({ createdAt: -1 })
+    .exec((err, films) => {
+      Film.countDocuments((error, total) => {
+        if (err) return res.status(400).json(error);
+
+        return res.status(200).json({
+          films: films.map(formatFilm),
+          paginations: {
+            limit,
+            page: Number(page),
+            count: Math.ceil(total / limit),
+          },
+        });
+      });
+    });
+};
+
+function formatFilm(data) {
+  const { _id: id, description, path, type, status } = data;
+
+  return {
+    id,
+    description,
+    path,
+    type,
     status,
   };
 }
@@ -38,26 +80,26 @@ module.exports.create = async (req, res, next) => {
     }
   }
 
-  if (files()?.size > 8 * 1024 * 1024) {
+  if (files()?.size > 150 * 1024 * 1024) {
     return res
       .status(400)
-      .json({ message: "Tệp tin ảnh không được vượt quá 8MB." });
+      .json({ message: "Tệp tin video không được vượt quá 150MB." });
   }
 
-  if (files()?.mimetype !== "image/png" && files()?.mimetype !== "image/jpeg") {
+  if (files()?.mimetype !== "video/mp4" && files()?.mimetype !== "video/ogg") {
     return res
       .status(400)
-      .json({ message: "Tệp tin ảnh không đúng định dạng." });
+      .json({ message: "Tệp tin video không đúng định dạng." });
   }
 
-  await Poster.create({
-    path: files()?.path,
+  await Film.create({
+    path: files().path,
     description: req.body.description,
     type: files().mimetype,
     createdAt: Date.now(),
   })
     .then(() => {
-      return res.status(200).json({ message: "Thêm poster thành công." });
+      return res.status(200).json({ message: "Thêm video thành công." });
     })
     .catch((error) => {
       return res.status(400).json({ message: error });
@@ -77,10 +119,10 @@ module.exports.update = async (req, res, next) => {
     }
   }
 
-  await Poster.updateOne(
+  await Film.updateOne(
     { _id: req.params.id },
     {
-      image: files()?.path,
+      path: files()?.path,
       status: req.body.status,
       description: req.body.description,
       updatedAt: Date.now(),
@@ -95,7 +137,7 @@ module.exports.update = async (req, res, next) => {
 };
 
 module.exports.delete = async (req, res, next) => {
-  await Poster.updateOne(
+  await Film.updateOne(
     {
       _id: req.params.id,
     },
