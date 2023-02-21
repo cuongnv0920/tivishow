@@ -7,8 +7,10 @@ const port = 5003;
 // route
 const authRoute = require("./routes/auth.route");
 const userRoute = require("./routes/user.route");
+const roomRoute = require("./routes/room.route");
+const levelRoute = require("./routes/level.route");
 const posterRoute = require("./routes/poster.route");
-const videoRoute = require("./routes/video.route");
+const filmRoute = require("./routes/film.route");
 const calendarRoute = require("./routes/calendar.route");
 const marginRoute = require("./routes/margin.route");
 const exchangeRateRoute = require("./routes/exchageRate.route");
@@ -39,11 +41,13 @@ app.use(express.static("public"));
 app.use("/auth", authRoute);
 app.use("/user", userRoute);
 app.use("/poster", posterRoute);
-app.use("/video", videoRoute);
+app.use("/film", filmRoute);
 app.use("/calendar", calendarRoute);
 app.use("/margin", marginRoute);
 app.use("/exchangeRate", exchangeRateRoute);
 app.use("/deposit", depositRoute);
+app.use("/room", roomRoute);
+app.use("/level", levelRoute);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

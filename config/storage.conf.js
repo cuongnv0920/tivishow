@@ -16,7 +16,7 @@ const uploadImage = multer({
   },
 });
 
-const uploadVideo = multer({
+const uploadFilm = multer({
   storage: storage,
   limits: {
     fileSize: "150mb",
@@ -24,4 +24,4 @@ const uploadVideo = multer({
 });
 
 module.exports = uploadImage;
-module.exports = uploadVideo;
+module.exports = uploadFilm;

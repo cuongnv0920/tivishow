@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const posterSchema = new Schema({
-  image: {
+  path: {
     type: String,
   },
 
@@ -13,6 +13,10 @@ const posterSchema = new Schema({
   status: {
     type: Boolean,
     default: true,
+  },
+
+  type: {
+    type: String,
   },
 
   softDelete: {
