@@ -2,8 +2,8 @@ const Deposit = require("../models/deposit.model");
 const { validationResult, body } = require("express-validator");
 
 module.exports.getAll = async (req, res, next) => {
-  const limit = req.query._limit || 8;
-  const page = req.query._page || 1;
+  const limit = req.query._limit;
+  const page = req.query._page;
 
   await Deposit.find({ $and: [{ softDelete: null }, { status: true }] })
     .skip(limit * page - limit)
