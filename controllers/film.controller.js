@@ -2,36 +2,8 @@ const Film = require("../models/film.model");
 const fs = require("fs");
 
 module.exports.getAll = async (req, res, next) => {
-  await Film.find()
-    .where({ softDelete: "" })
-    .sort({ createdAt: -1 })
-    .exec((err, films) => {
-      Film.countDocuments((err, count) => {
-        if (err) return res.status(400).json(err);
-
-        return res.status(200).json({
-          films: films.map(formatFilm),
-          count: count,
-        });
-      });
-    });
-};
-
-function formatFilm(data) {
-  const { _id: id, description, path, type, status } = data;
-
-  return {
-    id,
-    description,
-    path,
-    type,
-    status,
-  };
-}
-
-module.exports.get = async (req, res, next) => {
-  const limit = req.query._limit || 1;
-  const page = req.query._page || 1;
+  const limit = req.query._limit;
+  const page = req.query._page;
 
   await Film.find({ $and: [{ softDelete: null }, { status: true }] })
     .skip(limit * page - limit)
