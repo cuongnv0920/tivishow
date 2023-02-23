@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "admin": "node server.js",
+    "user": "node user.js",
+    "start": "concurrently \"npm run admin\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
