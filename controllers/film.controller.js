@@ -5,7 +5,8 @@ module.exports.getAll = async (req, res, next) => {
   const limit = req.query._limit;
   const page = req.query._page;
 
-  await Film.find({ $and: [{ softDelete: null }, { status: true }] })
+  await Film.find()
+    .where({ softDelete: null })
     .skip(limit * page - limit)
     .limit(limit)
     .sort({ createdAt: -1 })
